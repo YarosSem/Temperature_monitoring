@@ -1,6 +1,8 @@
 import datetime
 import mysql.connector
 from mysql.connector import Error, MySQLConnection
+import hashlib
+import re
 
 def current_time():
     """"
@@ -52,7 +54,47 @@ def autorisation(login, password, dbconfig):
     В случае совпадения возвращает id плоьзователя
     В случае несовпадения возвращает False
     """
-    def get_login_id(login, cursor):
+    
+    def check_password(login_id, password, cursor):
+        """
+        Проверяет совпадение password и пароля из базы
+        Возвращает True, если совпадение обнаружено
+        """
+        password_query = """
+                         SELECT pass
+                         FROM login
+                         WHERE login_id = "{login_id}"
+                         """.format(login_id = login_id)
+        cursor.execute(password_query)
+        row = cursor.fetchall()
+        
+        hasher = hashlib.md5()
+        hasher.update(password.encode('utf-8'))
+        hashed_password = str(hasher.digest())[2 : -1].replace('\\', '')
+        if row and row[0][0] == hashed_password:
+            return True
+        else:
+            return False
+    
+    if not password_is_correct(password):
+        return False
+    
+    conn = MySQLConnection(**dbconfig)
+    cursor = conn.cursor()
+    # Проверка налиция логина в базе
+    login_id = get_login_id(login, cursor)
+    if not login_id:
+        conn.close()
+        return False
+    # Проверка на совпадение паролей
+    if not check_password(login_id, password, cursor):
+        conn.close()
+        return False
+    else:
+        conn.close()
+        return login_id
+
+def get_login_id(login, cursor):
         """"
         Выбирает login_id из базы
         В случае несовпадения возвращает False
@@ -69,35 +111,52 @@ def autorisation(login, password, dbconfig):
             return row[0][0]
         else:
             return False
+
+def registration(login, password, dbconfig):
+    """
+    Производит регистрацию пользователя
+    Возвращает True, если данные в базу успешно внесены
+    """
     
-    def check_password(login_id, password, cursor):
+    def login_is_correct(login):
         """
-        Проверяет совпадение password и пароля из базы
-        Возвращает True, если совпадение обнаружено
+        Возвращает True, если логин состоит из допустимых символов
         """
-        password_query = """
-                         SELECT pass
-                         FROM login
-                         WHERE login_id = "{login_id}"
-                         """.format(login_id = login_id)
-        cursor.execute(password_query)
-        row = cursor.fetchall()
-        if row and row[0][0] == password:
+        match = re.match('^[a-zA-Z0-9_!@#$%^&*()]+$', login)
+        if match:
             return True
         else:
             return False
     
+    # Проверка корректности введенных логина и пароля
+    if not login_is_correct(login) or not password_is_correct(password):
+        return False
+    
     conn = MySQLConnection(**dbconfig)
     cursor = conn.cursor()
-    # Проверка налиция логина в базе
-    login_id = get_login_id(login, cursor)
-    if not login_id:
+    #Проверка наличия пользователя с таким же логином
+    if get_login_id(login, cursor):
+        conn.close()
         return False
-    # Проверка на совпадение паролей
-    if not check_password(login_id, password, cursor):
-        return False
-    else:
-        return login_id
+    hasher = hashlib.md5()
+    hasher.update(password.encode('utf-8'))
+    hashed_password = str(hasher.digest())[2 : -1].replace('\\', '')
+    # Дополнение таблицы login
+    insertion_query = """
+                      INSERT INTO login (login_name, pass)
+                      VALUES ('{login}', '{password}');
+                      """.format(login = login, password = hashed_password)
+    cursor.execute(insertion_query)
+    conn.commit()
+    conn.close()
+    return True
 
-
-
+def password_is_correct(password):
+        """
+        Возвращает True, если логин состоит из допустимых символов
+        """
+        match = re.match('^[a-zA-Z0-9_!@#$%^&*()]+$', password)
+        if match:
+            return True
+        else:
+            return False
