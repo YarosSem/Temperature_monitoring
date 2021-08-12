@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 12 18:09:20 2021
-
-@author: yaros
-"""
-
 import datetime
 import mysql.connector
 from mysql.connector import Error, MySQLConnection
@@ -106,12 +99,5 @@ def autorisation(login, password, dbconfig):
     else:
         return login_id
 
-def limb():
-    a = 2
-    b = 1
-    return a + b
-
-if __name__ == '__main__':
-    a = 1
 
 
