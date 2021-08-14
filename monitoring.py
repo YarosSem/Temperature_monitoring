@@ -184,6 +184,6 @@ class StatisticsLabel(QtWidgets.QLabel):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = Register()
+    window = AccountWindow()
     window.show()
     sys.exit(app.exec_())

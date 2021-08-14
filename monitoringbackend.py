@@ -19,7 +19,7 @@ def current_time():
     minutes = time.minute
     seconds = time.second
     
-    result_row = '{day}.{mounth}.{year} {hour}:{minute}:{second}'.format(day = day,
+    result_row = '{day:0>2d}.{mounth:0>2d}.{year:0>4d} {hour:0>2d}:{minute:0>2d}:{second:0>2d}'.format(day = day,
                                                                          mounth = mounth,
                                                                          year = year,
                                                                          hour = hours,
