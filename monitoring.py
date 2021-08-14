@@ -138,7 +138,9 @@ class AccountWindow(QtWidgets.QWidget):
         
         # Объекты
         self.adding_header = AddingTemperatureLabel()
-        self.current_datetime = QtWidgets.QLabel(mbd.current_time(),
+        self.current_moment = mbd.current_time()
+        
+        self.current_datetime = QtWidgets.QLabel(self.current_moment[0],
                                                  alignment = QtCore.Qt.AlignCenter)
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(1000)
@@ -167,7 +169,8 @@ class AccountWindow(QtWidgets.QWidget):
         self.main_layout.addStretch(25)
     
     def refresh_time(self):
-        self.current_datetime.setText(mbd.current_time())
+        self.current_moment = mbd.current_time()
+        self.current_datetime.setText(self.current_moment[0])
 
 class AddingTemperatureLabel(QtWidgets.QLabel):
     def __init__(self, parent = None):

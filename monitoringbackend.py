@@ -25,7 +25,7 @@ def current_time():
                                                                          hour = hours,
                                                                          minute = minutes,
                                                                          second = seconds)
-    return result_row
+    return result_row, str(date), str(time)[0 : str(time).index('.')]
 
 def connection_to_base(host = 'localhost',
                        database = 'temperature_monitoring',
