@@ -12,6 +12,95 @@ import monitoringbackend as mbd
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+class App(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        
+        self.dbconfig = mbd.connection_to_base()
+        if self.dbconfig:
+            self.autorisation_process()
+        else:
+            pass
+    
+    def autorisation_process(self):
+        self.sign_in = SignIn(parent = self)
+        self.main_layout.addWidget(self.sign_in)
+        
+        # Обработчики
+        self.sign_in.login_button.clicked.connect(self.autorisation_try)
+        self.sign_in.register_button.clicked.connect(self.registration_process)
+    
+    def autorisation_try(self):
+        login = self.sign_in.login_add.text()
+        password = self.sign_in.password_add.text()
+        res = mbd.autorisation(login, password, self.dbconfig)
+        if res:
+            self.login_id = res
+            self.account_window = AccountWindow(self.login_id, self.dbconfig)
+            self.main_layout.removeWidget(self.sign_in)
+            self.main_layout.addWidget(self.account_window)
+            self.sign_in.deleteLater()
+        else:
+            error = AutorisationError(parent = self)
+            error.show()
+    
+    def registration_process(self):
+        self.register = Register()
+        self.main_layout.removeWidget(self.sign_in)
+        self.main_layout.addWidget(self.register)
+        self.sign_in.deleteLater()
+        
+        # Обработчик
+        self.register.register_button.clicked.connect(self.registration_try)
+    
+    def registration_try(self):
+        if self.register.ready == True:
+            login = self.register.login_add.text()
+            password = self.register.password_confirm.text()
+            registration = mbd.registration(login, password, self.dbconfig)
+            if registration:
+                self.main_layout.removeWidget(self.register)
+                self.register.deleteLater()
+                self.autorisation_process()
+            else:
+                error = RegistrationError(parent = self)
+                error.show()
+
+class AutorisationError(QtWidgets.QDialog):
+    def __init__(self, parent = None):
+        super().__init__(parent = parent)
+        self.setWindowTitle('Ошибка авторизации')
+        self.setMinimumWidth(300)
+        self.setMinimumHeight(100)
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        
+        # Объекты
+        self.label = QtWidgets.QLabel('Неправильно введен логин или пароль')
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        
+        # Лэйаут
+        self.error_layout = QtWidgets.QVBoxLayout(self)
+        self.error_layout.addWidget(self.label,
+                                    alignment = QtCore.Qt.AlignCenter)
+
+class RegistrationError(QtWidgets.QDialog):
+    def __init__(self, parent = None):
+        super().__init__(parent = parent)
+        self.setWindowTitle('Ошибка регистрации')
+        self.setMinimumWidth(300)
+        self.setMinimumHeight(100)
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        
+        # Объекты
+        self.label = QtWidgets.QLabel('В поля введены недопустимые значения')
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        
+        # Лэйаут
+        self.error_layout = QtWidgets.QVBoxLayout(self)
+        self.error_layout.addWidget(self.label,
+                                    alignment = QtCore.Qt.AlignCenter)
+
 class SignIn(QtWidgets.QWidget):
     """"
     Окно авторизации
@@ -56,6 +145,8 @@ class Register(QtWidgets.QWidget):
     def __init__ (self, parent = None):
         super().__init__()
         self.setWindowTitle('Регистрация')
+        self.setMinimumWidth(300)
+        self.ready = False
         
         # Объекты
         self.header = RegisterHeader()
@@ -92,9 +183,7 @@ class Register(QtWidgets.QWidget):
         self.equal_label_size()
     
     def equal_label_size(self):
-        self.show()
-        widths = tuple(label.width() for label in self.labels_widgets)
-        self.hide()
+        widths = tuple(120 for label in self.labels_widgets)
         max_width = max(widths)
         for label in self.labels_widgets:
             label.setMinimumWidth(max_width)
@@ -110,6 +199,9 @@ class Register(QtWidgets.QWidget):
                                                                    pass_two)]):
             self.password_error = RegisterPasswordError(parent = self)
             self.password_error.show()
+            self.ready = False
+        else:
+            self.ready = True
 
 class RegisterHeader(QtWidgets.QLabel):
     def __init__(self, parent = None):
@@ -137,6 +229,8 @@ class AccountWindow(QtWidgets.QWidget):
     def __init__(self, login_id, dbconfig, parent = None):
         super().__init__()
         self.setWindowTitle('Мониторинг температруы')
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(400)
         
         # Объекты
         self.adding_header = AddingTemperatureLabel()
@@ -244,6 +338,7 @@ class PlotCanvas(FigureCanvas):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = AccountWindow(3, mbd.connection_to_base())
+    #window = AccountWindow(3, mbd.connection_to_base())
+    window = App()
     window.show()
     sys.exit(app.exec_())
