@@ -233,7 +233,7 @@ def current_sickness_figure_points(login_id, dbconfig):
     conn.close()
     #print(x_days_points[1 : -1])
     #print(y_days_points)
-    return temperature_coords, x_days_points, y_days_points
+    return temperature_coords, x_days_points[ 1: -1], y_days_points
 
 def insert_temperature_mesurement_result(temperature, measurement_day,
                                          measurement_time, login_id, dbconfig):
