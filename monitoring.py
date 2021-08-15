@@ -21,7 +21,31 @@ class App(QtWidgets.QWidget):
         if self.dbconfig:
             self.autorisation_process()
         else:
-            pass
+            self.database_setting_process()
+    
+    def database_setting_process(self):
+        self.database_setting = DatabaseSetting()
+        self.main_layout.addWidget(self.database_setting)
+        
+        # Обработчик
+        self.database_setting.confirm_button.clicked.connect(self.database_setting_try)
+    
+    def database_setting_try(self):
+        host = self.database_setting.host_edit.text()
+        database = self.database_setting.database_edit.text()
+        user = self.database_setting.user_edit.text()
+        password = self.database_setting.password_edit.text()
+        self.dbconfig = mbd.connection_to_base(host = host,
+                                               database = database,
+                                               user = user,
+                                               password = password)
+        if self.dbconfig:
+            self.main_layout.removeWidget(self.database_setting)
+            self.database_setting.deleteLater()
+            self.autorisation_process()
+        else:
+            self.database_setting_error = DatabaseSettingError(parent = self)
+            self.database_setting_error.show()
     
     def autorisation_process(self):
         self.sign_in = SignIn(parent = self)
@@ -66,6 +90,57 @@ class App(QtWidgets.QWidget):
             else:
                 error = RegistrationError(parent = self)
                 error.show()
+
+class DatabaseSetting(QtWidgets.QWidget):
+    def __init__(self, parent = None):
+        super().__init__()
+        self.setWindowTitle('Настройка подключения')
+        
+        # Объекты
+        self.head_label = QtWidgets.QLabel('Введите параметры подключения')
+        self.head_label.setAlignment(QtCore.Qt.AlignHCenter)
+        self.host_label = QtWidgets.QLabel('Адрес хоста:')
+        self.host_edit = QtWidgets.QLineEdit()
+        self.database_label = QtWidgets.QLabel('Название базы:')
+        self.database_edit = QtWidgets.QLineEdit()
+        self.user_label = QtWidgets.QLabel('Имя пользователя:')
+        self.user_edit = QtWidgets.QLineEdit()
+        self.password_label = QtWidgets.QLabel('Пароль:')
+        self.password_edit = QtWidgets.QLineEdit()
+        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.confirm_button = QtWidgets.QPushButton('Применить')
+        
+        # Лэйаут
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.form_layout = QtWidgets.QGridLayout()
+        self.form_layout.addWidget(self.host_label, 0, 0, 1, 1)
+        self.form_layout.addWidget(self.database_label, 1, 0, 1, 1)
+        self.form_layout.addWidget(self.user_label, 2, 0, 1, 1)
+        self.form_layout.addWidget(self.password_label, 3, 0, 1, 1)
+        self.form_layout.addWidget(self.host_edit, 0, 1, 1, 3)
+        self.form_layout.addWidget(self.database_edit, 1, 1, 1, 3)
+        self.form_layout.addWidget(self.user_edit, 2, 1, 1, 3)
+        self.form_layout.addWidget(self.password_edit, 3, 1, 1, 3)
+        self.main_layout.addWidget(self.head_label)
+        self.main_layout.addLayout(self.form_layout)
+        self.main_layout.addWidget(self.confirm_button)
+
+class DatabaseSettingError(QtWidgets.QDialog):
+    def __init__(self, parent = None):
+        super().__init__(parent = parent)
+        self.setWindowTitle('Ошибка настройки подключения')
+        self.setMinimumWidth(300)
+        self.setMinimumHeight(100)
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        
+        # Объекты
+        self.label = QtWidgets.QLabel('Введены неверные параметры для подключения')
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        
+        # Лэйаут
+        self.error_layout = QtWidgets.QVBoxLayout(self)
+        self.error_layout.addWidget(self.label,
+                                    alignment = QtCore.Qt.AlignCenter)
 
 class AutorisationError(QtWidgets.QDialog):
     def __init__(self, parent = None):
@@ -340,5 +415,6 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     #window = AccountWindow(3, mbd.connection_to_base())
     window = App()
+    #window = DatabaseSetting()
     window.show()
     sys.exit(app.exec_())

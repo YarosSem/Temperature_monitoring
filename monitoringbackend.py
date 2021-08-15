@@ -237,6 +237,10 @@ def current_sickness_figure_points(login_id, dbconfig):
 
 def insert_temperature_mesurement_result(temperature, measurement_day,
                                          measurement_time, login_id, dbconfig):
+    """
+    Заносит значения температуры, дня и времени измерения для пользователя с login_id
+    Возвращает None
+    """
     conn = MySQLConnection(**dbconfig)
     cursor = conn.cursor()
     
