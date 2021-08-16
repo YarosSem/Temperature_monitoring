@@ -1,0 +1,17 @@
+CREATE DATABASE `ggtemperature_monitoringone` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE TABLE `login` (
+  `login_id` int NOT NULL AUTO_INCREMENT,
+  `login_name` varchar(30) DEFAULT NULL,
+  `pass` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`login_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `temperature_measurement` (
+  `measurement_id` int NOT NULL AUTO_INCREMENT,
+  `login_id` int NOT NULL,
+  `temperature` decimal(3,1) DEFAULT NULL,
+  `measurement_day` date DEFAULT NULL,
+  `measurement_time` time DEFAULT NULL,
+  PRIMARY KEY (`measurement_id`),
+  KEY `login_id` (`login_id`),
+  CONSTRAINT `temperature_measurement_ibfk_1` FOREIGN KEY (`login_id`) REFERENCES `login` (`login_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
