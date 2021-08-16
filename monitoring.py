@@ -7,6 +7,7 @@ Created on Mon Jul 12 15:13:27 2021
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
+import PyQt5.QtGui as QtGui
 import sys
 import monitoringbackend as mbd
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -91,24 +92,60 @@ class App(QtWidgets.QWidget):
                 error = RegistrationError(parent = self)
                 error.show()
 
+class HeaderFont(QtGui.QFont):
+    """
+    Шрифт для заголовков
+    """
+    def __init__(self):
+        super().__init__('Calibri')
+        self.setPointSize(20)
+        self.setBold(True)
+
+class LabelsFont(QtGui.QFont):
+    """
+    Шрифт для надписей к формам, кнопкам и сообщениям об ошибке
+    """
+    def __init__(self):
+        super().__init__('Calibri')
+        self.setPointSize(14)
+
+class EditFont(QtGui.QFont):
+    """
+    Шрифт для QLineEdit
+    """
+    def __init__(self):
+        super().__init__('Calibri')
+        self.setPointSize(12)
+
 class DatabaseSetting(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super().__init__()
         self.setWindowTitle('Настройка подключения')
+        self.setMaximumHeight(400)
         
         # Объекты
         self.head_label = QtWidgets.QLabel('Введите параметры подключения')
+        self.head_label.setFont(HeaderFont())
         self.head_label.setAlignment(QtCore.Qt.AlignHCenter)
         self.host_label = QtWidgets.QLabel('Адрес хоста:')
+        self.host_label.setFont(LabelsFont())
         self.host_edit = QtWidgets.QLineEdit()
+        self.host_edit.setFont(EditFont())
         self.database_label = QtWidgets.QLabel('Название базы:')
+        self.database_label.setFont(LabelsFont())
         self.database_edit = QtWidgets.QLineEdit()
+        self.database_edit.setFont(EditFont())
         self.user_label = QtWidgets.QLabel('Имя пользователя:')
+        self.user_label.setFont(LabelsFont())
         self.user_edit = QtWidgets.QLineEdit()
+        self.user_edit.setFont(EditFont())
         self.password_label = QtWidgets.QLabel('Пароль:')
+        self.password_label.setFont(LabelsFont())
         self.password_edit = QtWidgets.QLineEdit()
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_edit.setFont(EditFont())
         self.confirm_button = QtWidgets.QPushButton('Применить')
+        self.confirm_button.setFont(LabelsFont())
         
         # Лэйаут
         self.main_layout = QtWidgets.QVBoxLayout(self)
@@ -122,7 +159,11 @@ class DatabaseSetting(QtWidgets.QWidget):
         self.form_layout.addWidget(self.user_edit, 2, 1, 1, 3)
         self.form_layout.addWidget(self.password_edit, 3, 1, 1, 3)
         self.main_layout.addWidget(self.head_label)
-        self.main_layout.addLayout(self.form_layout)
+        self.main_layout.addSpacing(25)
+        self.main_layout.addStretch(100)
+        self.main_layout.addLayout(self.form_layout, stretch=100)
+        self.main_layout.addSpacing(25)
+        self.main_layout.addStretch(100)
         self.main_layout.addWidget(self.confirm_button)
 
 class DatabaseSettingError(QtWidgets.QDialog):
@@ -136,6 +177,7 @@ class DatabaseSettingError(QtWidgets.QDialog):
         # Объекты
         self.label = QtWidgets.QLabel('Введены неверные параметры для подключения')
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setFont(LabelsFont())
         
         # Лэйаут
         self.error_layout = QtWidgets.QVBoxLayout(self)
@@ -153,6 +195,7 @@ class AutorisationError(QtWidgets.QDialog):
         # Объекты
         self.label = QtWidgets.QLabel('Неправильно введен логин или пароль')
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setFont(LabelsFont())
         
         # Лэйаут
         self.error_layout = QtWidgets.QVBoxLayout(self)
@@ -170,6 +213,7 @@ class RegistrationError(QtWidgets.QDialog):
         # Объекты
         self.label = QtWidgets.QLabel('В поля введены недопустимые значения')
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setFont(LabelsFont())
         
         # Лэйаут
         self.error_layout = QtWidgets.QVBoxLayout(self)
@@ -183,35 +227,52 @@ class SignIn(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super().__init__()
         self.setWindowTitle('Авторизация')
+        self.setMaximumHeight(400)
+        self.setMinimumWidth(300)
         
         # Объекты
         self.header = SignInHeader()
-        self.login_label = QtWidgets.QLabel('Логин')
+        self.login_label = QtWidgets.QLabel('Логин:')
         self.login_label.setAlignment(QtCore.Qt.AlignHCenter)
+        self.login_label.setFont(LabelsFont())
         self.login_add = QtWidgets.QLineEdit()
         self.login_add.setAlignment(QtCore.Qt.AlignHCenter)
-        self.password_label = QtWidgets.QLabel('Пароль')
+        self.login_add.setFont(EditFont())
+        self.password_label = QtWidgets.QLabel('Пароль:')
         self.password_label.setAlignment(QtCore.Qt.AlignHCenter)
+        self.password_label.setFont(LabelsFont())
         self.password_add = QtWidgets.QLineEdit()
         self.password_add.setAlignment(QtCore.Qt.AlignHCenter)
         self.password_add.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_add.setFont(EditFont())
         self.login_button = QtWidgets.QPushButton('Войти')
+        self.login_button.setFont(LabelsFont())
         self.register_button = QtWidgets.QPushButton('У меня нет аккаунта')
+        self.register_button.setFont(LabelsFont())
         
         # Лэйаут
         self.form_layout = QtWidgets.QVBoxLayout(self)
-        self.form_layout.addWidget(self.header)
-        self.form_layout.addWidget(self.login_label)
-        self.form_layout.addWidget(self.login_add)
-        self.form_layout.addWidget(self.password_label)
+        self.form_layout.addStretch(1)
+        self.form_layout.addWidget(self.header, alignment = QtCore.Qt.AlignVCenter)
+        self.form_layout.addSpacing(25)
+        self.form_layout.addStretch(1)
+        self.form_layout.addWidget(self.login_label, alignment = QtCore.Qt.AlignVCenter,
+                                   stretch = 1)
+        self.form_layout.addWidget(self.login_add, stretch = 1)
+        self.form_layout.addWidget(self.password_label, alignment = QtCore.Qt.AlignVCenter,
+                                   stretch = 1)
         self.form_layout.addWidget(self.password_add)
-        self.form_layout.addWidget(self.login_button)
-        self.form_layout.addWidget(self.register_button)
+        self.form_layout.addStretch(1)
+        self.form_layout.addSpacing(25)
+        self.form_layout.addWidget(self.login_button, stretch = 1)
+        self.form_layout.addWidget(self.register_button, stretch = 1)
+        self.form_layout.addStretch(1)
 
 class SignInHeader (QtWidgets.QLabel):
     def __init__(self, parent = None):
         super().__init__('Авторизация')
         self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setFont(HeaderFont())
 
 class Register(QtWidgets.QWidget):
     """
@@ -220,30 +281,38 @@ class Register(QtWidgets.QWidget):
     def __init__ (self, parent = None):
         super().__init__()
         self.setWindowTitle('Регистрация')
-        self.setMinimumWidth(300)
+        self.setMinimumWidth(400)
         self.ready = False
         
         # Объекты
         self.header = RegisterHeader()
-        labels = ('Логин',
-                  'Пароль',
-                  'Повтор пароля')
+        labels = ('Логин:',
+                  'Пароль:',
+                  'Повтор пароля:')
         self.labels_widgets = tuple(QtWidgets.QLabel(label)
                                     for label in labels)
+        for label in self.labels_widgets:
+            label.setFont(LabelsFont())
         self.login_add = QtWidgets.QLineEdit()
+        self.login_add.setFont(EditFont())
         self.password_add = QtWidgets.QLineEdit()
         self.password_add.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_add.setFont(EditFont())
         self.password_confirm = QtWidgets.QLineEdit()
         self.password_confirm.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_confirm.setFont(EditFont())
         self.register_button = QtWidgets.QPushButton('Отправить запрос')
+        self.register_button.setFont(LabelsFont())
         
         # Обработчики
         self.register_button.clicked.connect(self.register)
         
         # Лэйаут
         self.form_layout = QtWidgets.QVBoxLayout(self)
+        self.form_layout.addStretch(50)
         self.form_layout.addWidget(self.header, 50)
-        self.form_layout.addStretch(25)
+        self.form_layout.addSpacing(25)
+        self.form_layout.addStretch(50)
         for label, line_adit in zip(self.labels_widgets,
                                    (self.login_add, self.password_add,
                                     self.password_confirm)):
@@ -251,14 +320,17 @@ class Register(QtWidgets.QWidget):
             layout.addWidget(label, 0)
             layout.addWidget(line_adit, 100)
             self.form_layout.addLayout(layout)
-            self.form_layout.addStretch(50)
+            self.form_layout.addStretch(20)
+        self.form_layout.addSpacing(25)
+        self.form_layout.addStretch(50)
         self.form_layout.addWidget(self.register_button)
+        self.form_layout.addStretch(50)
         
         # Подгон лэйблов формы под один размер
         self.equal_label_size()
     
     def equal_label_size(self):
-        widths = tuple(120 for label in self.labels_widgets)
+        widths = tuple(150 for label in self.labels_widgets)
         max_width = max(widths)
         for label in self.labels_widgets:
             label.setMinimumWidth(max_width)
@@ -282,6 +354,7 @@ class RegisterHeader(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super().__init__('Регистрация')
         self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setFont(HeaderFont())
 
 class RegisterPasswordError(QtWidgets.QDialog):
     def __init__(self, parent = None):
@@ -294,6 +367,7 @@ class RegisterPasswordError(QtWidgets.QDialog):
         # Объекты
         self.label = QtWidgets.QLabel('Пароли не совпадают, введите заново')
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setFont(LabelsFont())
         
         # Лэйаут
         self.error_layout = QtWidgets.QVBoxLayout(self)
@@ -304,7 +378,7 @@ class AccountWindow(QtWidgets.QWidget):
     def __init__(self, login_id, dbconfig, parent = None):
         super().__init__()
         self.setWindowTitle('Мониторинг температруы')
-        self.setMinimumWidth(600)
+        self.setMinimumWidth(800)
         self.setMinimumHeight(400)
         
         # Объекты
@@ -315,18 +389,22 @@ class AccountWindow(QtWidgets.QWidget):
         
         self.current_datetime = QtWidgets.QLabel(self.current_moment[0],
                                                  alignment = QtCore.Qt.AlignCenter)
+        self.current_datetime.setFont(LabelsFont())
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.refresh_time)
         self.timer.start()
-        self.temperature_label = QtWidgets.QLabel('Введите текущую температуру')
+        self.temperature_label = QtWidgets.QLabel('Введите текущую температуру:')
+        self.temperature_label.setFont(LabelsFont())
         self.temperature_add = QtWidgets.QDoubleSpinBox()
         self.temperature_add.setValue(36.6)
         self.temperature_add.setRange(35.0, 42.0)
         self.temperature_add.setSingleStep(0.1)
         self.temperature_add.setSuffix('°')
         self.temperature_add.setDecimals(1)
+        self.temperature_add.setFont(EditFont())
         self.send_temperature_button = QtWidgets.QPushButton('Оправить')
+        self.send_temperature_button.setFont(LabelsFont())
         self.figure_widget = PlotCanvas(mbd.current_sickness_figure_points(login_id, dbconfig))
         
         # Обработчики
@@ -335,7 +413,9 @@ class AccountWindow(QtWidgets.QWidget):
         # Лэйаут
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.main_layout.addWidget(self.adding_header, 50)
+        self.main_layout.addSpacing(25)
         self.main_layout.addWidget(self.current_datetime, 50)
+        self.main_layout.addSpacing(45)
         self.temperature_add_layout = QtWidgets.QHBoxLayout()
         self.temperature_add_layout.addWidget(self.temperature_label, 0)
         self.temperature_add_layout.addWidget(self.temperature_add, 100)
@@ -343,6 +423,7 @@ class AccountWindow(QtWidgets.QWidget):
         self.main_layout.addLayout(self.temperature_add_layout)
         self.main_layout.addStretch(25)
         self.main_layout.addWidget(self.send_temperature_button)
+        self.main_layout.addSpacing(25)
         self.main_layout.addStretch(25)
         self.main_layout.addWidget(self.figure_widget)
     
@@ -363,6 +444,7 @@ class AddingTemperatureLabel(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super().__init__('Запись текущей температуры')
         self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setFont(HeaderFont())
 
 class StatisticsLabel(QtWidgets.QLabel):
     def __init__(self, parent = None):
@@ -396,14 +478,18 @@ class PlotCanvas(FigureCanvas):
         ax = self.fig.add_subplot(111)
         ax.plot(temperature_points[:, 0], temperature_points[:, 1], 'g-')
         ax.scatter(temperature_points[:, 0], temperature_points[:, 1], color = 'blue',
-                   s = 100)
+                   s = 50)
         for x in x_days_points:
             ax.plot([x, x], y_days_points, color = 'lightblue',
                     ls = '--', lw = '0.8')
-        ax.set_title('Результаты термометрии по текущей болезни', pad = 15)
+        ax.set_title('Результаты термометрии по текущей болезни', pad = 20,
+                     fontsize = 16, fontdict = {'family' : 'calibri'})
+        ax.set_ylabel('Температура [°С]', labelpad = 15, fontsize = 14, family = 'calibri')
+        ax.set_xlabel('Период болезни', labelpad = 12, fontsize = 14, family = 'calibri')
         ax.set_xlim(left = 0, right = 1000)
         ax.set_ylim(top = y_days_points[1], bottom = y_days_points[0])
         ax.grid(True, axis = 'y', ls = ':')
+        ax.set_xticks([])
         self.draw()
     
     def message(self):
@@ -413,8 +499,10 @@ class PlotCanvas(FigureCanvas):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    #window = AccountWindow(3, mbd.connection_to_base())
-    window = App()
+    window = AccountWindow(3, mbd.connection_to_base())
+    #window = App()
     #window = DatabaseSetting()
+    #window = Register()
+    #window = AutorisationError()
     window.show()
     sys.exit(app.exec_())

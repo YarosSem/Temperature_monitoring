@@ -199,8 +199,9 @@ def current_sickness_figure_points(login_id, dbconfig):
             current_sickness_list.append(row)
         else:
             break
+    #print(current_sickness_list)
     # Заполнение списка из кортежей, включающих записи дня
-    monitoring_days = tuple(set(row[1] for row in current_sickness_list))
+    monitoring_days = tuple(set(row[1] for row in current_sickness_list))[::-1]
     #print(monitoring_days)
     current_sickness_list_days = []
     index = 0
