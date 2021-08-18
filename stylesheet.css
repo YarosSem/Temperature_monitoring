@@ -1,0 +1,57 @@
+App {
+	background-color: #00cf91;
+}
+
+DatabaseSettingError, AutorisationError, RegistrationError, RegisterPasswordError {
+	background-color: #ffcf6e;
+}
+
+App > SignIn > SignInHeader, App > Register > RegisterHeader, App > AccountWindow > AddingTemperatureLabel, App > QLabel#setting_header {
+	color : #fff;
+}
+
+QPushButton {
+	border: 2px solid #8f8f91;
+	border-radius: 5px;
+	background-color: #d4fce4;
+}
+
+QPushButton:default {
+	border-radius: 5px;
+	border-color: red;
+}
+
+QPushButton:hover {
+	border-color: #00ff1a
+}
+
+QLineEdit {
+	border: 2px solid lightgray;
+	border-radius: 5px;
+}
+
+App > AccountWindow > QLabel#current_time {
+	color: #fff700;
+}
+
+App > AccountWindow > QPushButton {
+	border-radius: 10px;
+}
+
+App > AccountWindow > QDoubleSpinBox {
+	border: 2px solid lightgray;
+	border-radius: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+App > AccountWindow > QDoubleSpinBox::up-button {
+	subcontrol-position: top right;
+	width: 30px;
+
+}
+
+App > AccountWindow > QDoubleSpinBox::down-button {
+	subcontrol-position: bottom right;
+	width: 30px;
+}

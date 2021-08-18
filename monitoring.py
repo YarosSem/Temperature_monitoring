@@ -13,9 +13,13 @@ import monitoringbackend as mbd
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+# Табилца стилей
+css = open('./stylesheet.css').read()
+
 class App(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet(css)
         self.main_layout = QtWidgets.QVBoxLayout(self)
         
         self.dbconfig = mbd.connection_to_base()
@@ -128,6 +132,7 @@ class DatabaseSetting(QtWidgets.QWidget):
         
         # Объекты
         self.head_label = QtWidgets.QLabel('Введите параметры подключения')
+        self.head_label.setObjectName('setting_header')
         self.head_label.setFont(HeaderFont())
         self.head_label.setAlignment(QtCore.Qt.AlignHCenter)
         self.host_label = QtWidgets.QLabel('Адрес хоста:')
@@ -235,13 +240,13 @@ class SignIn(QtWidgets.QWidget):
         
         # Объекты
         self.header = SignInHeader()
-        self.login_label = QtWidgets.QLabel('Логин:')
+        self.login_label = QtWidgets.QLabel('Логин')
         self.login_label.setAlignment(QtCore.Qt.AlignHCenter)
         self.login_label.setFont(LabelsFont())
         self.login_add = QtWidgets.QLineEdit()
         self.login_add.setAlignment(QtCore.Qt.AlignHCenter)
         self.login_add.setFont(EditFont())
-        self.password_label = QtWidgets.QLabel('Пароль:')
+        self.password_label = QtWidgets.QLabel('Пароль')
         self.password_label.setAlignment(QtCore.Qt.AlignHCenter)
         self.password_label.setFont(LabelsFont())
         self.password_add = QtWidgets.QLineEdit()
@@ -385,7 +390,7 @@ class AccountWindow(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('Мониторинг температруы')
         self.setMinimumWidth(800)
-        self.setMinimumHeight(400)
+        self.setMinimumHeight(650)
         
         # Объекты
         self.adding_header = AddingTemperatureLabel()
@@ -396,6 +401,7 @@ class AccountWindow(QtWidgets.QWidget):
         self.current_datetime = QtWidgets.QLabel(self.current_moment[0],
                                                  alignment = QtCore.Qt.AlignCenter)
         self.current_datetime.setFont(LabelsFont())
+        self.current_datetime.setObjectName('current_time')
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.refresh_time)
@@ -411,6 +417,7 @@ class AccountWindow(QtWidgets.QWidget):
         self.temperature_add.setFont(EditFont())
         self.send_temperature_button = QtWidgets.QPushButton('Оправить')
         self.send_temperature_button.setFont(LabelsFont())
+        self.send_temperature_button.setMinimumHeight(50)
         self.figure_widget = PlotCanvas(mbd.current_sickness_figure_points(login_id, dbconfig))
         
         # Обработчики
@@ -419,18 +426,19 @@ class AccountWindow(QtWidgets.QWidget):
         # Лэйаут
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.main_layout.addWidget(self.adding_header, 50)
-        self.main_layout.addSpacing(25)
+        #self.main_layout.addSpacing(15)
         self.main_layout.addWidget(self.current_datetime, 50)
-        self.main_layout.addSpacing(45)
+        #self.main_layout.addSpacing(5)
         self.temperature_add_layout = QtWidgets.QHBoxLayout()
         self.temperature_add_layout.addWidget(self.temperature_label, 0)
+        self.temperature_add_layout.addSpacing(10)
         self.temperature_add_layout.addWidget(self.temperature_add, 100)
-        self.main_layout.addStretch(25)
+        #self.main_layout.addStretch(5)
         self.main_layout.addLayout(self.temperature_add_layout)
-        self.main_layout.addStretch(25)
+        #self.main_layout.addStretch(25)
         self.main_layout.addWidget(self.send_temperature_button)
         self.main_layout.addSpacing(25)
-        self.main_layout.addStretch(25)
+        #self.main_layout.addStretch(25)
         self.main_layout.addWidget(self.figure_widget)
     
     def refresh_time(self):
@@ -463,6 +471,7 @@ class PlotCanvas(FigureCanvas):
     """
     def __init__(self, data, parent=None, width=6, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig.set_facecolor('#00cf91')
         self.axes = self.fig.add_subplot(111)
 
         FigureCanvas.__init__(self, self.fig)
@@ -503,7 +512,7 @@ class PlotCanvas(FigureCanvas):
     
     def message(self):
         ax = self.fig.add_subplot(111)
-        ax.text(0.22, 0.45, 'Данных пока нет', size = 20)
+        ax.text(0.27, 0.45, 'Данных пока нет', size = 20, color = 'red')
         self.draw()
 
 if __name__ == '__main__':
