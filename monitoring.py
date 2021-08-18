@@ -118,6 +118,9 @@ class EditFont(QtGui.QFont):
         self.setPointSize(12)
 
 class DatabaseSetting(QtWidgets.QWidget):
+    """
+    Окно настройки подключения к базе
+    """
     def __init__(self, parent = None):
         super().__init__()
         self.setWindowTitle('Настройка подключения')
@@ -375,6 +378,9 @@ class RegisterPasswordError(QtWidgets.QDialog):
                                     alignment = QtCore.Qt.AlignCenter)
 
 class AccountWindow(QtWidgets.QWidget):
+    """
+    Окно пользователя
+    """
     def __init__(self, login_id, dbconfig, parent = None):
         super().__init__()
         self.setWindowTitle('Мониторинг температруы')
@@ -452,6 +458,9 @@ class StatisticsLabel(QtWidgets.QLabel):
         self.setAlignment(QtCore.Qt.AlignCenter)
 
 class PlotCanvas(FigureCanvas):
+    """
+    Виджет графика
+    """
     def __init__(self, data, parent=None, width=6, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
@@ -498,9 +507,10 @@ class PlotCanvas(FigureCanvas):
         self.draw()
 
 if __name__ == '__main__':
+    
     app = QtWidgets.QApplication(sys.argv)
-    window = AccountWindow(3, mbd.connection_to_base())
-    #window = App()
+    #window = AccountWindow(3, mbd.connection_to_base())
+    window = App()
     #window = DatabaseSetting()
     #window = Register()
     #window = AutorisationError()
